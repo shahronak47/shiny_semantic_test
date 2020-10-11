@@ -11,15 +11,32 @@ ui <- semanticPage(
   
   HTML("<p><b>Selected ship type:\n\n\n</b></p>"),
   
-  dropdown_input("ship_type_dropdown", unique_ship_type, value = "Cargo", type = "selection multiple"),
+  dropdown_input("ship_type_dropdown", unique_ship_type, value = "Cargo", type = "selection"),
+  
+  dropdown_input("ship_name_dropdown", "ship_name_dropdown", type = "selection"),
+  
   textOutput("selected_ship")
   
 )
 
 
 server <- shinyServer(function(input, output, session) {
-  output$selected_ship <- renderText(paste(input[["ship_type_dropdown"]], collapse = ", "))
+  #Print the selected drop down from ship_type_dropdown
+  output$selected_ship <- renderText(input$ship_type_dropdown)
+  
+  #Filter the relevant ship names based on ship type selected.  
+  lists <- reactive({
+    unique(ships$SHIPNAME[ships$ship_type == input$ship_type_dropdown])
+  })
+  
+   #Change the values in ship_name dropdown based on ship type selected
+   observe({
+     
+      update_dropdown_input(session, "ship_name_dropdown", value = lists()[1], choices =   lists())
+  })
+
   
 })
 
 shinyApp(ui = ui, server = server)
+
