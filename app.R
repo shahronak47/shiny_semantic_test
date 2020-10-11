@@ -3,7 +3,7 @@ library(shiny)
 library(shiny.semantic)
 #ships <- read.csv('Downloads/shiny_semantic_test/ships.csv')
 
-#Get unique ship types removing
+#Get unique ship types removing "Unspecified" ship
 unique_ship_type <- unique(ships$ship_type[ships$ship_type != 'Unspecified'])
 
 ui <- semanticPage(
@@ -20,13 +20,6 @@ ui <- semanticPage(
 server <- shinyServer(function(input, output, session) {
   output$selected_ship <- renderText(paste(input[["ship_type_dropdown"]], collapse = ", "))
   
-  observeEvent(input$simple_button, {
-    update_dropdown_input(session, "ship_type_dropdown", value = "D")
-  })
-  
-  observeEvent(input$simple_button2, {
-    update_dropdown_input(session, "ship_type_dropdown", choices = LETTERS, value = input$simple_dropdown)
-  })
 })
 
 shinyApp(ui = ui, server = server)
