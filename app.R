@@ -1,6 +1,8 @@
 #Load libraries
 library(shiny)
 library(shiny.semantic)
+library(leaflet)
+
 #ships <- read.csv('Downloads/shiny_semantic_test/ships.csv')
 
 #Get unique ship types removing "Unspecified" ship
@@ -15,7 +17,10 @@ ui <- semanticPage(
   
   dropdown_input("ship_name_dropdown", "ship_name_dropdown", type = "selection"),
   
-  textOutput("selected_ship")
+  textOutput("selected_ship"),
+  
+  
+  leafletOutput(outputId = "map", width="100%")
   
 )
 
@@ -31,12 +36,26 @@ server <- shinyServer(function(input, output, session) {
   
    #Change the values in ship_name dropdown based on ship type selected
    observe({
-     
       update_dropdown_input(session, "ship_name_dropdown", value = lists()[1], choices =   lists())
   })
+   
+   data <- reactive({ships %>% 
+     filter(ship_type == input$ship_type_dropdown, SHIPNAME == input$ship_name_dropdown) %>%
+     arrange(LAT, LON) %>%
+     slice(1L, n())
+     })
+   
+   output$map <- renderLeaflet({
+     leaflet()%>%
+       addTiles() %>%
+       addPolylines(data = data(), lng = ~LON, lat = ~LAT)
+   })
+   
 
   
 })
 
 shinyApp(ui = ui, server = server)
+
+
 
