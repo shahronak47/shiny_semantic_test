@@ -2,6 +2,7 @@
 library(shiny)
 library(shiny.semantic)
 library(leaflet)
+library(geosphere)
 
 #ships <- read.csv('Downloads/shiny_semantic_test/ships.csv')
 
@@ -39,23 +40,34 @@ server <- shinyServer(function(input, output, session) {
       update_dropdown_input(session, "ship_name_dropdown", value = lists()[1], choices =   lists())
   })
    
+   #Filter rows for selected name and type and keep the farthest row (first and last row)
    data <- reactive({ships %>% 
      filter(ship_type == input$ship_type_dropdown, SHIPNAME == input$ship_name_dropdown) %>%
      arrange(LAT, LON) %>%
      slice(1L, n())
      })
    
+   #calculate distance based on latitiude and longitude
+   dist <- reactive({
+     as.numeric(with(data(), distm(c(LON[1], LAT[1]), c(LON[2], LAT[2]), fun = distHaversine)))
+   })
+   
+   #Plot the two points on map with a line and corresponding label showing the distance
    output$map <- renderLeaflet({
      leaflet()%>%
        addTiles() %>%
-       addPolylines(data = data(), lng = ~LON, lat = ~LAT)
+       addPolylines(data = data(), lng = ~LON, lat = ~LAT, label = paste0('Dist = ', round(dist(), 2)),
+                    labelOptions = labelOptions(noHide = TRUE))
    })
-   
-
-  
 })
 
 shinyApp(ui = ui, server = server)
 
 
+
+
+#ships %>% 
+#  filter(ship_type == 'Cargo', SHIPNAME == 'KAROLI') %>%
+#  arrange(LAT, LON) %>%
+#  slice(1L, n()) -> tmp
 
