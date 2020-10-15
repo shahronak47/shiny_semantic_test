@@ -3,6 +3,7 @@ library(shiny)
 library(shiny.semantic)
 library(leaflet)
 library(geosphere)
+library(dplyr)
 
 #Read data from github
 ships <- readRDS(url('https://github.com/shahronak47/shiny_semantic_test/raw/main/ships.rds', method="libcurl"))
@@ -20,7 +21,7 @@ ui <- semanticPage(
   dropdown_input("ship_type_dropdown", unique_ship_type, value = "Cargo", type = "selection"),
   
   HTML('&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;'),
-  dropdown_input("ship_name_dropdown", "ship_name_dropdown", type = "selection"),
+  dropdown_input("ship_name_dropdown", "ship_name_dropdown", value = "KAROLI", type = "selection"),
   
   br(), br(), br(),
   
@@ -50,7 +51,7 @@ server <- shinyServer(function(input, output, session) {
    data <- reactive({ships %>% 
      filter(ship_type == input$ship_type_dropdown, SHIPNAME == input$ship_name_dropdown) %>%
      arrange(LAT, LON) %>%
-     slice(1L, n())
+     slice(1L, dplyr::n())
      })
    
    #calculate distance based on latitiude and longitude
