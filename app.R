@@ -4,7 +4,7 @@ library(shiny.semantic)
 library(leaflet)
 library(geosphere)
 
-#ships <- read.csv('Downloads/shiny_semantic_test/ships.csv')
+ships <- read.csv('Downloads/shiny_semantic_test/ships.csv')
 
 #Get unique ship types removing "Unspecified" ship
 unique_ship_type <- unique(ships$ship_type[ships$ship_type != 'Unspecified'])
@@ -12,16 +12,21 @@ unique_ship_type <- unique(ships$ship_type[ships$ship_type != 'Unspecified'])
 ui <- semanticPage(
   title = "Dropdown example",
   
-  HTML("<p><b>Selected ship type:\n\n\n</b></p>"),
+  HTML("<p><b>Select ship type: &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+       Select ship name:\n\n\n </b></p>"),
+  
   
   dropdown_input("ship_type_dropdown", unique_ship_type, value = "Cargo", type = "selection"),
   
+  HTML('&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;'),
   dropdown_input("ship_name_dropdown", "ship_name_dropdown", type = "selection"),
   
-  textOutput("selected_ship"),
+  br(), br(), br(),
   
   
-  leafletOutput(outputId = "map", width="100%")
+  leafletOutput(outputId = "map", width="100%"), 
+  br(), br(), br(),
+  uiOutput("text")
   
 )
 
@@ -51,7 +56,7 @@ server <- shinyServer(function(input, output, session) {
    dist <- reactive({
      as.numeric(with(data(), distm(c(LON[1], LAT[1]), c(LON[2], LAT[2]), fun = distHaversine)))
    })
-   
+    
    #Plot the two points on map with a line and corresponding label showing the distance
    output$map <- renderLeaflet({
      leaflet()%>%
@@ -59,15 +64,10 @@ server <- shinyServer(function(input, output, session) {
        addPolylines(data = data(), lng = ~LON, lat = ~LAT, label = paste0('Dist = ', round(dist(), 2)),
                     labelOptions = labelOptions(noHide = TRUE))
    })
+   
+   output$text <- reactive({sprintf('<font size = 4><i>Maximum distance for Ship Type %s and name %s is %s</i></font>', 
+                          input$ship_type_dropdown, input$ship_name_dropdown, round(dist(), 2))})
 })
 
 shinyApp(ui = ui, server = server)
-
-
-
-
-#ships %>% 
-#  filter(ship_type == 'Cargo', SHIPNAME == 'KAROLI') %>%
-#  arrange(LAT, LON) %>%
-#  slice(1L, n()) -> tmp
 
