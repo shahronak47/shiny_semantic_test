@@ -4,13 +4,14 @@ library(shiny.semantic)
 library(leaflet)
 library(geosphere)
 
-ships <- read.csv('Downloads/shiny_semantic_test/ships.csv')
+#Read data from github
+ships <- readRDS(url('https://github.com/shahronak47/shiny_semantic_test/raw/main/ships.rds', method="libcurl"))
 
 #Get unique ship types removing "Unspecified" ship
 unique_ship_type <- unique(ships$ship_type[ships$ship_type != 'Unspecified'])
 
 ui <- semanticPage(
-  title = "Dropdown example",
+  title = "Ship Data",
   
   HTML("<p><b>Select ship type: &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
        Select ship name:\n\n\n </b></p>"),
