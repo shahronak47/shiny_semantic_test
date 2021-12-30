@@ -49,7 +49,7 @@ server <- shinyServer(function(input, output, session) {
    
    #Filter rows for selected name and type and keep the farthest row (first and last row)
    data <- reactive({ships %>% 
-     filter(ship_type == input$ship_type_dropdown, SHIPNAME == input$ship_name_dropdown) %>%
+       dplyr::filter(ship_type == input$ship_type_dropdown, SHIPNAME == input$ship_name_dropdown) %>%
      arrange(LAT, LON) %>%
      slice(1L, dplyr::n())
      })
