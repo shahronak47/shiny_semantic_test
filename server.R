@@ -8,7 +8,6 @@ library(waiter)
 ships <- readRDS(url('https://github.com/shahronak47/shiny_semantic_test/raw/main/ships.rds', method="libcurl"))
 
 server <- function(input, output, session) {
-  Sys.sleep(2)
   waiter_hide()
   
   #Print the selected drop down from ship_type_dropdown
@@ -46,8 +45,10 @@ server <- function(input, output, session) {
                    labelOptions = labelOptions(noHide = TRUE))
   })
   
-  output$text <- reactive({sprintf('<font size = 4><i>Maximum distance for Ship Type %s and name %s is %s</i></font>', 
-                                   input$ship_type_dropdown, input$ship_name_dropdown, round(dist(), 2))})
+  output$text <- renderUI({
+    HTML(sprintf('<font size = 4><i>Maximum distance for Ship Type %s and name %s is %s metres.</i></font>', 
+                                   input$ship_type_dropdown, input$ship_name_dropdown, round(dist(), 2)))
+    })
 }
 
 server
