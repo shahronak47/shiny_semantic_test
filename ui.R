@@ -1,6 +1,7 @@
 library(shiny)
 library(shiny.semantic)
 library(leaflet)
+library(waiter)
 
 #Read data from github
 ships <- readRDS(url('https://github.com/shahronak47/shiny_semantic_test/raw/main/ships.rds', method="libcurl"))
@@ -11,6 +12,8 @@ unique_ship_type <- unique(ships$ship_type[ships$ship_type != 'Unspecified'])
 ui <- semanticPage(
   title = "Ship Data",
   
+  useWaiter(), 
+  waiter_show_on_load(spin_whirly()),
   HTML("<p><b>Select ship type: &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
        Select ship name:\n\n\n </b></p>"),
   
@@ -29,4 +32,4 @@ ui <- semanticPage(
   
 )
 
-polished::secure_ui(ui)
+ui

@@ -2,11 +2,15 @@ library(shiny)
 library(shiny.semantic)
 library(geosphere)
 library(dplyr)
+library(waiter)
 
 #Read data from github
 ships <- readRDS(url('https://github.com/shahronak47/shiny_semantic_test/raw/main/ships.rds', method="libcurl"))
 
 server <- function(input, output, session) {
+  Sys.sleep(2)
+  waiter_hide()
+  
   #Print the selected drop down from ship_type_dropdown
   output$selected_ship <- renderText(input$ship_type_dropdown)
   
@@ -46,4 +50,4 @@ server <- function(input, output, session) {
                                    input$ship_type_dropdown, input$ship_name_dropdown, round(dist(), 2))})
 }
 
-polished::secure_server(server)
+server
